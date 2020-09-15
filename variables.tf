@@ -15,6 +15,11 @@
  */
 
 variable "alerts" {
-  type        = any
+  type = list(object({
+    name = string
+    type = string
+    channels = list(string)
+    rule = string
+  }))
   description = "Resources as JSON (see README.md). You can read values from a YAML file with yamldecode()."
 }

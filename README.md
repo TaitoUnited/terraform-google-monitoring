@@ -1,27 +1,32 @@
-# Google Cloud DNS
+# Google Cloud monitoring
 
 Example usage:
 
 ```
 provider "google" {
-  project = "my-infrastructure"
-  region  = "europe-west1"
-  zone    = "europe-west1b"
+  project      = "my-infrastructure"
+  region       = "europe-west1"
+  zone         = "europe-west1b"
 }
 
 resource "google_project_service" "compute" {
-  service                    = "compute.googleapis.com"
-  disable_dependent_services = true
-  disable_on_destroy         = false
+  service      = "compute.googleapis.com"
+}
+
+resource "google_project_service" "monitoring" {
+  service      = "monitoring.googleapis.com"
 }
 
 module "monitoring" {
   source       = "TaitoUnited/monitoring/google"
   version      = "1.0.0"
   providers    = [ google ]
-  depends_on   = [ google_project_service.compute ]
+  depends_on   = [
+    google_project_service.compute,
+    google_project_service.monitoring,
+  ]
 
-  alerts    = yamldecode(file("${path.root}/../infra.yaml"))["alerts"]
+  alerts       = yamldecode(file("${path.root}/../infra.yaml"))["alerts"]
 }
 ```
 
