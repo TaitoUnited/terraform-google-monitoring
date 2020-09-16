@@ -43,6 +43,13 @@ alerts:
     rule: >
       resource.type="k8s_container"
       severity>=ERROR
+  - name: nginx-ingress-response-time
+    type: log
+    channels: [ "monitoring" ]
+    rule: >
+      resource.type="k8s_container"
+      resource.labels.namespace_name="nginx-ingress"
+      jsonPayload.responseTimeS>=3
 ```
 
 Combine with the following modules to get a complete infrastructure defined by YAML:
