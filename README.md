@@ -37,18 +37,18 @@ Example YAML:
 # You have to create them manually (e.g. the 'monitoring' channel shown below).
 
 alerts:
-  - name: kubernetes-container-errors
+  - name: container-errors
     type: log
     channels: [ "monitoring" ]
     rule: >
       resource.type="k8s_container"
       severity>=ERROR
-  - name: nginx-ingress-response-time
+  - name: ingress-response-time
     type: log
     channels: [ "monitoring" ]
     rule: >
       resource.type="k8s_container"
-      resource.labels.namespace_name="nginx-ingress"
+      resource.labels.namespace_name="ingress-nginx"
       jsonPayload.responseTimeS>=3
 ```
 
