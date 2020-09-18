@@ -15,7 +15,6 @@
  */
 
 locals {
-
   origAlerts = var.alerts
 
   alertChannelNames = flatten([
@@ -37,5 +36,4 @@ locals {
     for alert in local.alerts:
     try(alert.type, "") == "log" ? [ alert ] : []
   ])
-
 }
