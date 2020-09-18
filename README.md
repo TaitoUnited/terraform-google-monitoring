@@ -37,19 +37,26 @@ Example YAML:
 # You have to create them manually (e.g. the 'monitoring' channel shown below).
 
 alerts:
-  - name: container-errors
-    type: log
-    channels: [ "monitoring" ]
-    rule: >
-      resource.type="k8s_container"
-      severity>=ERROR
   - name: ingress-response-time
     type: log
     channels: [ "monitoring" ]
     rule: >
-      resource.type="k8s_container"
-      resource.labels.namespace_name="ingress-nginx"
-      jsonPayload.responseTimeS>=3
+      resource.type = "k8s_container"
+      resource.labels.namespace_name = "ingress-nginx"
+      jsonPayload.responseTimeS >= 3
+  - name: ingress-response-status
+    type: log
+    channels: [ "monitoring" ]
+    rule: >
+      resource.type = "k8s_container"
+      resource.labels.namespace_name = "ingress-nginx"
+      jsonPayload.status >= 500
+  - name: container-errors
+    type: log
+    channels: [ "monitoring" ]
+    rule: >
+      resource.type = "k8s_container"
+      severity >= ERROR
 ```
 
 Combine with the following modules to get a complete infrastructure defined by YAML:
@@ -61,6 +68,7 @@ Combine with the following modules to get a complete infrastructure defined by Y
 - [Databases](https://registry.terraform.io/modules/TaitoUnited/databases/google)
 - [Storage](https://registry.terraform.io/modules/TaitoUnited/storage/google)
 - [Monitoring](https://registry.terraform.io/modules/TaitoUnited/monitoring/google)
+- [Events](https://registry.terraform.io/modules/TaitoUnited/events/google)
 - [PostgreSQL privileges](https://registry.terraform.io/modules/TaitoUnited/privileges/postgresql)
 - [MySQL privileges](https://registry.terraform.io/modules/TaitoUnited/privileges/mysql)
 
