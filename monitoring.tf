@@ -18,6 +18,9 @@
 # Getting auth token for slack is not so easy?
 # https://stackoverflow.com/questions/54884815/obtain-slack-auth-token-for-terraform-google-monitoring-notification-channel-res
 
+# TODO: Create StackDriver workspace once implemented:
+# https://github.com/hashicorp/terraform-provider-google/issues/2605#issuecomment-609924289
+
 data "google_monitoring_notification_channel" "alert_channel" {
   count        = length(local.alertChannelNames)
   display_name = local.alertChannelNames[count.index]
@@ -42,7 +45,7 @@ resource "google_monitoring_alert_policy" "log_alert_policy" {
     condition_threshold {
       filter     = "metric.type=\"logging.googleapis.com/user/${local.logAlerts[count.index].name}\""
         # was also: AND resource.type=\"k8s_container\"
-      duration   = "0" # was 60s
+      duration   = "60s"
       comparison = "COMPARISON_GT"
       aggregations {
         alignment_period   = "60s"
