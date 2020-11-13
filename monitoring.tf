@@ -22,28 +22,28 @@
 # https://github.com/hashicorp/terraform-provider-google/issues/2605#issuecomment-609924289
 
 data "google_monitoring_notification_channel" "alert_channel" {
-  count        = length(local.alertChannelNames)
-  display_name = local.alertChannelNames[count.index]
+  for_each     = {for item in local.alertChannelNames: item => item}
+  display_name = each.value
 }
 
 resource "google_monitoring_alert_policy" "log_alert_policy" {
   depends_on = [
     google_logging_metric.log_alert_metric,
   ]
-  count = length(local.logAlerts)
+  for_each = {for item in local.logAlerts: item.name => item}
 
-  display_name          = local.logAlerts[count.index].name
+  display_name          = each.value.name
   enabled               = true
   notification_channels = [
-    for i in local.logAlerts[count.index].channelIndices:
+    for i in each.value.channelIndices:
     data.google_monitoring_notification_channel.alert_channel[i].name
   ]
 
   combiner     = "OR"
   conditions {
-    display_name = local.logAlerts[count.index].name
+    display_name = each.value.name
     condition_threshold {
-      filter     = "metric.type=\"logging.googleapis.com/user/${local.logAlerts[count.index].name}\" AND resource.type=\"k8s_container\""
+      filter     = "metric.type=\"logging.googleapis.com/user/${each.value.name}\" AND resource.type=\"k8s_container\""
       duration   = "60s"
       comparison = "COMPARISON_GT"
       aggregations {

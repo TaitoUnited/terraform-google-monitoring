@@ -15,10 +15,10 @@
  */
 
 resource "google_logging_metric" "log_alert_metric" {
-  count = length(local.logAlerts)
+  for_each = {for item in local.logAlerts: item.name => item}
 
-  name   = local.logAlerts[count.index].name
-  filter = local.logAlerts[count.index].rule
+  name   = each.value.name
+  filter = each.value.rule
   metric_descriptor {
     metric_kind = "DELTA"
     value_type  = "INT64"
@@ -29,14 +29,14 @@ resource "google_logging_metric" "log_alert_metric" {
 resource "google_logging_project_sink" "logs" {
   depends_on = [google_project_service.compute]
 
-  count = length(local.loggingSinks)
-  name  = local.loggingSinks[count.index].name
+  for_each = {for item in local.loggingSinks: item.name => item}
+  name  = each.value.name
 
   # Can export to pubsub, cloud storage, or bigtable
-  destination = "bigquery.googleapis.com/projects/${local.loggingSinks[count.index].name}/datasets/logs"
+  destination = "bigquery.googleapis.com/projects/${each.value.name}/datasets/logs"
 
   # Log all WARN or higher severity messages relating to instances
-  filter = "resource.type=container AND resource.jsonPayload.labels.company=${local.loggingSinks[count.index].company}"
+  filter = "resource.type=container AND resource.jsonPayload.labels.company=${each.value.company}"
 
   # Use a unique writer (creates a unique service account used for writing)
   unique_writer_identity = true
