@@ -19,7 +19,7 @@ locals {
 
   alertChannelNames = flatten([
     for alert in local.origAlerts:
-    try(alert.channels, [])
+    coalesce(alert.channels, [])
   ])
 
   alerts = flatten([
@@ -34,6 +34,6 @@ locals {
 
   logAlerts = flatten([
     for alert in local.alerts:
-    try(alert.type, "") == "log" ? [ alert ] : []
+    coalesce(alert.type, "") == "log" ? [ alert ] : []
   ])
 }
