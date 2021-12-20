@@ -1,0 +1,7 @@
+alerts:
+  - name: container-errors
+    type: log
+    channels: [ "monitoring", "email_monitoring" ]
+    rule: >
+      resource.type = "k8s_container"
+      severity >= ERROR

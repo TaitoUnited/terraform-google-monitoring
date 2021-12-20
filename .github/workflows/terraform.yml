@@ -1,0 +1,49 @@
+name: "Terraform"
+
+# see https://learn.hashicorp.com/tutorials/terraform/github-actions
+# and https://github.com/hashicorp/learn-terraform-github-actions/blob/master/.github/workflows/terraform.yml
+
+# also consider https://medium.com/faun/format-your-terraform-code-with-github-actions-2ce3ccdd6fb6 to 
+# .pre-commit-config.yaml https://github.com/terraform-aws-modules/terraform-aws-autoscaling/blob/master/.pre-commit-config.yaml
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+
+jobs:
+  terraform:
+    name: "Terraform"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          # terraform_version: 0.13.0:
+          cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
+
+
+      - name: Terraform Format
+        id: fmt
+        run: terraform fmt -check
+
+# TODO: loop over all examples
+
+      - name: Terraform Init
+        id: init
+        run: |
+          cd examples/basic
+          terraform init
+      - name: Terraform Plan
+        id: plan
+        if: github.event_name == 'pull_request'
+        env:
+          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+        run: |
+          cd examples/basic
+          terraform plan -no-color
+        continue-on-error: true
