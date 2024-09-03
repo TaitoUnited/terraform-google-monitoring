@@ -19,7 +19,7 @@ resource "google_project_service" "monitoring" {
 
 module "monitoring" {
   source       = "TaitoUnited/monitoring/google"
-  version      = "1.0.0"
+  version      = "2.1.0"
   providers    = [ google ]
   depends_on   = [
     google_project_service.compute,
